@@ -54,7 +54,7 @@
 
 - 开两个会话连接
 - 1个cd到getOne文件夹 使用命令行运行服务并开启端口号  ./getOne 
-- 1个cd到wrk目录下 使用wrk命令进行压力测试 ./wrk -t4 -c200 -d30 --latency http://10.0.12.11:1234/getOne （http中的地址使用内网地址，端口号为我getOne中开启的端口号）
+- 1个cd到wrk目录下 使用wrk命令进行压力测试 ./wrk -t4 -c200 -d30 --latency http://10.0.12.11:1234/getOne （http中的地址使用内网地址，端口号为我getOne中开启的端口号[1314文件中 已修改为 8084]）
 
 5. 成功
 
