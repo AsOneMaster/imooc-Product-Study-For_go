@@ -53,9 +53,14 @@ func (c *UserController) PostRegister() {
 	return
 }
 
-func (c *UserController) GetLogin() mvc.View {
-	return mvc.View{
-		Name: "user/login.html",
+func (c *UserController) GetLogin() mvc.Response {
+	if c.Ctx.GetCookie("userid") != "" {
+		return mvc.Response{
+			Path: "/product/detail",
+		}
+	}
+	return mvc.Response{
+		Path: "user/login",
 	}
 }
 
@@ -95,7 +100,7 @@ func (c *UserController) PostLogin() mvc.Response {
 	//写入cookie 浏览器
 	tool.GlobalCookie(c.Ctx, "sign", uidString)
 	return mvc.Response{
-		Path: "/product/",
+		Path: "/product/detail",
 	}
 
 }

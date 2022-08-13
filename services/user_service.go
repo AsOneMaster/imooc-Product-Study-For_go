@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"github.com/kataras/iris/v12/core/errgroup"
 	"golang.org/x/crypto/bcrypt"
 	"imooc-Product/datamodels"
@@ -8,6 +9,7 @@ import (
 )
 
 type IUserService interface {
+	GetUserByID(userID int64) (user *datamodels.User, err error)
 	IsPwdSuccess(userName string, pwd string) (user *datamodels.User, isOk bool)
 	AddUser(user *datamodels.User) (userId int64, err error)
 }
@@ -19,6 +21,16 @@ type UserService struct {
 func NewUserService(repository repositories.IUser) IUserService {
 	return &UserService{repository}
 }
+
+func (u *UserService) GetUserByID(userID int64) (user *datamodels.User, err error) {
+	user, err = u.UserRepository.Get(userID)
+	if err != nil {
+		fmt.Println("GetUserByID")
+		return
+	}
+	return
+}
+
 func (u *UserService) IsPwdSuccess(userName string, pwd string) (user *datamodels.User, isOk bool) {
 
 	user, err := u.UserRepository.Select(userName)

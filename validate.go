@@ -89,17 +89,17 @@ func (a *AccessControl) GetDistributedRight(r *http.Request) bool {
 
 // GetDataFromMap 获取本机map，并且处理业务逻辑，返回的结果类型为bool类型
 func (a *AccessControl) GetDataFromMap(uid string) (isOK bool) {
-	//uidInt, err := strconv.Atoi(uid)
-	//if err != nil {
-	//	return false
-	//}
-	//data := a.GetNewRecord(uidInt)
-	//
-	////执行判断逻辑
+	uidInt, err := strconv.Atoi(uid)
+	if err != nil {
+		return false
+	}
+	data := a.GetNewRecord(uidInt)
+	fmt.Println("-------GetDataFromMap:-----", data)
+	//执行判断逻辑
 	//测试使用
-	//if data != nil {
-	//	return true
-	//}
+	if data != nil {
+		return true
+	}
 	return true
 }
 

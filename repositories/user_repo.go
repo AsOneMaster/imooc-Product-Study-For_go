@@ -10,6 +10,7 @@ import (
 
 type IUser interface {
 	Conn() error
+	Get(userID int64) (user *datamodels.User, err error)
 	Select(userName string) (user *datamodels.User, err error)
 	Insert(user *datamodels.User) (userId int64, err error)
 }
@@ -34,6 +35,34 @@ func (u *UserManager) Conn() (err error) {
 	if u.table == "" {
 		u.table = "user"
 	}
+	return
+}
+
+func (u *UserManager) Get(userID int64) (user *datamodels.User, err error) {
+	if err = u.Conn(); err != nil {
+		return &datamodels.User{}, err
+	}
+
+	sql := "Select * from " + u.table + " where ID=?"
+	//fmt.Println("---------------selectName1:------------", userID, sql)
+	rows, errRows := u.mysqlConn.Query(sql, userID)
+	//str, _ := rows.Columns()
+	//fmt.Println("---------------selectName2:------------", str)
+	//sql.Rows 类型用完了要关闭
+	defer rows.Close()
+	if errRows != nil {
+		return &datamodels.User{}, errRows
+	}
+
+	result := common.GetResultRow(rows)
+
+	if len(result) == 0 {
+		return &datamodels.User{}, errgroup.New("用户不存在！")
+	}
+
+	user = &datamodels.User{}
+	common.DataToStructByTagSql(result, user)
+
 	return
 }
 

@@ -11,5 +11,6 @@ func AuthConProduct(ctx iris.Context) {
 		return
 	}
 	ctx.Application().Logger().Debug("已经登陆")
+	//继续请求上下文
 	ctx.Next()
 }

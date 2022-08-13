@@ -19,6 +19,7 @@ type ProductController struct {
 	Ctx            iris.Context
 	ProductService services.IProductService
 	OrderService   services.IOrderService
+	UserService    services.IUserService
 	//消息队列
 	RabbitMQ *rabbitmq.RabbitMQ
 	Session  *sessions.Session
@@ -77,7 +78,7 @@ func exist(fileName string) bool {
 	return err == nil || os.IsExist(err)
 }
 
-// GetDetail 秒杀页面 curl //detail
+// GetDetail 秒杀页面/商品详情页 需要用户登录才能看 curl //detail
 func (p *ProductController) GetDetail() mvc.View {
 	//固定产品
 	product, err := p.ProductService.GetProductByID(4)
@@ -101,7 +102,7 @@ func (p *ProductController) GetDetail() mvc.View {
 */
 // GetOrder func (p *ProductController) GetOrder() mvc.View {
 //获取订单
-func (p *ProductController) GetOrder() []byte {
+func (p *ProductController) GetOrder() mvc.View {
 	productIDString := p.Ctx.URLParam("productID")
 	userIDString := p.Ctx.GetCookie("userid")
 	//通过消息队列 缓解订单更新数据库压力
@@ -119,6 +120,7 @@ func (p *ProductController) GetOrder() []byte {
 	message := datamodels.NewMessage(productID, userID)
 	//类型转化 成rabbitmq可以传送的消息
 	byteMessage, err := json.Marshal(message)
+	fmt.Println()
 	if err != nil {
 		p.Ctx.Application().Logger().Debug(err)
 	}
@@ -127,7 +129,22 @@ func (p *ProductController) GetOrder() []byte {
 	if err != nil {
 		p.Ctx.Application().Logger().Debug(err)
 	}
-	return []byte("true")
+
+	user, err := p.UserService.GetUserByID(userID)
+	if err != nil {
+		p.Ctx.Application().Logger().Debug(err)
+	}
+	return mvc.View{
+		//商品详情布局文件
+		Layout: "shared/productLayout.html",
+		//页面模板
+		Name: "product/result.html",
+		Data: iris.Map{
+			"orderID":     user.NickName,
+			"showMessage": "抢购成功！",
+		},
+	}
+	//return byteMessage
 
 	//productID由string转换成int
 	//productID, err := strconv.Atoi(productIDString)
